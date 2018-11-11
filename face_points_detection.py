@@ -4,10 +4,9 @@ import cv2
 import dlib
 import argparse
 
-## Face and points detection
-def face_points_detection(img, bbox):
-    PREDICTOR_PATH = 'models/shape_predictor_68_face_landmarks.dat'
-    predictor = dlib.shape_predictor(PREDICTOR_PATH)
+
+# Face and points detection
+def face_points_detection(img, bbox, predictor):
 
     # Get the landmarks/parts for the face in box d.
     shape = predictor(img, bbox)
@@ -18,6 +17,7 @@ def face_points_detection(img, bbox):
 
     # return the list of (x, y)-coordinates
     return coords
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='FaceSwap Demo')
