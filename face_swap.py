@@ -51,18 +51,18 @@ def process_warp(src_img, result_img, tri_affines, dst_points, delaunay):
     Warp each triangle from the src_image only within the
     ROI of the destination image (points in dst_points).
     """
-    print('---------PROFILING PROCESS_WARP--------')
-    from time import time
-    start = time()
+#     print('---------PROFILING PROCESS_WARP--------')
+#     from time import time
+#     start = time()
     roi_coords = grid_coordinates(dst_points)
-    print('roi_coords', time()-start)
+#     print('roi_coords', time()-start)
 
-    start = time()
+#     start = time()
     # indices to vertices. -1 if pixel is not in any triangle
     roi_tri_indices = delaunay.find_simplex(roi_coords)
-    print('delaunay.find_simplex', time()-start)
+#     print('delaunay.find_simplex', time()-start)
 
-    start = time()
+#     start = time()
     for simplex_index in range(len(delaunay.simplices)):
         coords = roi_coords[roi_tri_indices == simplex_index]
         num_coords = len(coords)
@@ -70,7 +70,7 @@ def process_warp(src_img, result_img, tri_affines, dst_points, delaunay):
                             np.vstack((coords.T, np.ones(num_coords))))
         x, y = coords.T
         result_img[y, x] = bilinear_interpolate(src_img, out_coords)
-    print('cycle', time()-start)
+#     print('cycle', time()-start)
 
     return None
 

@@ -25,8 +25,10 @@ def select_face_dl(im, fa, r=10):
     left, top = np.min(points, 0)
     right, bottom = np.max(points, 0)
 
-    x, y = max(0, left-r), max(0, top-r)
-    w, h = min(right+r, im_h)-x, min(bottom+r, im_w)-y
+    x, y = int(max(0, left-r)), int(max(0, top-r))
+    w, h = int(min(right+r, im_h)-x), int(min(bottom+r, im_w)-y)
+    
+#     print(x, y, h, w)
 
     return points - np.asarray([[x, y]]), (x, y, w, h), im[y:y+h, x:x+w]
 
@@ -61,6 +63,7 @@ class Meme():
             meme_cfg = json.loads(f.read())
         self.img = cv2.imread(meme_cfg['path'])
         self.points = np.array(meme_cfg['landmarks'])
+#         self.points = np.array([(p[1], p[0]) for p in self.points])
         self.points, self.shape, self.face = self.extract_face()
         self.w, self.h = self.face.shape[:2]
         
@@ -75,11 +78,10 @@ class Meme():
         return self.points - np.asarray([[x, y]]), (x, y, w, h), self.img[y:y+h, x:x+w]
 
     def swap_face(self, source_image, fa):
-#         try:
-        if True:
+        try:
+#         if True:
             src_points, src_shape, src_face = select_face_dl(source_image, fa)
 #             src_points, src_shape, src_face = select_face_dl(source_image, detector, predictor)
-            start = time()
             warped_src_face = warp_image_3d(src_face, src_points[:], self.points[:], (self.w, self.h))
             # Mask for blending
             mask = mask_from_points((self.w, self.h), self.points)
@@ -102,14 +104,14 @@ class Meme():
             # cv2.imshow('mask', output)
             # print(mask.max())
 
-            x, y, w, h = self.img.shape
+            x, y, w, h = self.shape
             result = self.img.copy()
             result[y:y+h, x:x+w] = output
 
             return result
-#         except Exception as e:
-#             print(e)
-#             return self.img
+        except Exception as e:
+            print(e)
+            return self.img
 
 
 if __name__ == '__main__':
@@ -150,10 +152,9 @@ if __name__ == '__main__':
         ret, frame = cap.read()
         if not ret:
             break
-        print(fa)
         result = meme.swap_face(frame, fa)
         cv2.imwrite('res.jpg', result)
-        writer.write(frame)
-writer.release()
-cap.release()
-cv2.destroyAllWindows()
+        writer.write(result)
+    writer.release()
+    cap.release()
+    cv2.destroyAllWindows()
