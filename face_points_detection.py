@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import json
 import cv2
-import dlib
+# import dlib
 import argparse
 
 
